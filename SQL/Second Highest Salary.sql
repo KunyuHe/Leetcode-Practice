@@ -1,4 +1,3 @@
-# Write your MySQL query statement below
 SELECT
     IFNULL(
         (SELECT DISTINCT Salary
@@ -7,3 +6,12 @@ SELECT
                          FROM Employee)
          ORDER BY Salary DESC
          LIMIT 1), null) AS SecondHighestSalary;
+
+-- SOLUTION II
+ SELECT IFNULL(
+    (SELECT MAX(Salary)
+     FROM (SELECT Salary
+          FROM Employee
+          WHERE Salary < (SELECT MAX(Salary)
+                          FROM Employee)) AS temp),
+    null) AS SecondHighestSalary;

@@ -1,4 +1,8 @@
-SELECT ROUND(MIN(SQRT(POWER(l.x - r.x, 2) + POWER(l.y - r.y, 2))), 2) AS shortest
-FROM point_2d AS l
-INNER JOIN point_2d AS r
-ON l.x <> r.x OR l.y <> r.y
+SELECT ROUND(MIN(dist), 2) AS shortest
+FROM
+    (SELECT SQRT(POWER((a.x - b.x), 2) + POWER((a.y - b.y), 2)) AS dist
+     FROM
+         point_2d AS a
+         JOIN point_2d AS b
+             ON a.x <> b.x OR a.y <> b.y
+     ) AS temp;

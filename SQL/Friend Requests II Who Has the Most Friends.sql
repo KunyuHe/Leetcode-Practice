@@ -1,10 +1,29 @@
-SELECT id1 AS id, COUNT(id1) AS num
-FROM (# UNION would remove the reverse duplicates
-      SELECT requester_id AS id1, accepter_id AS id2
-      FROM request_accepted
-      UNION
-      SELECT accepter_id, requester_id
-      FROM request_accepted) AS temp
-GROUP BY id1
-ORDER BY COUNT(id1) DESC
-LIMIT 1
+SELECT
+    id,
+    COUNT(DISTINCT friend_id) AS num
+FROM
+    (SELECT accepter_id AS id, requester_id AS friend_id
+     FROM request_accepted
+     UNION
+     SELECT requester_id, accepter_id
+     FROM request_accepted) AS friends
+GROUP BY id
+ORDER BY num DESC
+LIMIT 1; -- Will fail tie
+
+-- SOLUTION II (more general)
+WITH temp AS
+    (SELECT
+         id,
+         COUNT(DISTINCT friend_id) AS num
+     FROM
+         (SELECT accepter_id AS id, requester_id AS friend_id
+          FROM request_accepted
+          UNION
+          SELECT requester_id, accepter_id
+          FROM request_accepted) AS friends
+     GROUP BY id)
+SELECT id, num
+FROM temp
+WHERE num >= (SELECT MAX(num)
+              FROM temp);

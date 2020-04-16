@@ -9,3 +9,10 @@ BEGIN
         LIMIT 1 OFFSET N
   );
 END
+
+-- SOLUTION II (more general)
+SELECT DISTINCT Salary
+FROM Employee AS e
+WHERE (SELECT COUNT(DISTINCT Salary)
+       FROM Employee
+       WHERE e.Salary < Salary) = N - 1
